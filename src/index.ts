@@ -49,6 +49,9 @@ function createJSDOMContextRequire(options: Types.Options): Types.JSDOMModule {
 
   context.require = createContextRequire({ dir, context, resolve, extensions });
 
+  // Pass through istanbul coverage.
+  (window as any).__coverage__ = (global as any).__coverage__;
+
   if (beforeParse) {
     beforeParse(window, context);
   }
