@@ -9,7 +9,7 @@
   ],
   "bugs": "https://github.com/mlrawlings/jsdom-context-require/issues",
   "devDependencies": {
-    "@types/jsdom": "^11.0.4",
+    "@types/jsdom": "^12.2.4",
     "@types/mocha": "^2.2.48",
     "@types/node": "^9.4.7",
     "coveralls": "^3.0.0",
