@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as path from "path";
 import * as assert from "assert";
 import createBrowser from "../src";
 
@@ -9,9 +8,12 @@ describe("jsdom-context-require", () => {
     const browser = createBrowser({ dir });
     const docHtml = browser.require("./fixtures/document-html");
     assert.equal(typeof window, "undefined");
-    assert.equal(docHtml.getHTML(), '<html><head></head><body></body></html>');
-    docHtml.setTitle('changed');
-    assert.equal(docHtml.getHTML(), '<html><head><title>changed</title></head><body></body></html>');
+    assert.equal(docHtml.getHTML(), "<html><head></head><body></body></html>");
+    docHtml.setTitle("changed");
+    assert.equal(
+      docHtml.getHTML(),
+      "<html><head><title>changed</title></head><body></body></html>"
+    );
   });
 
   it("should support initial html", () => {
@@ -19,7 +21,10 @@ describe("jsdom-context-require", () => {
     const browser = createBrowser({ dir, html: "<body>Hello World</body>" });
     const docHtml = browser.require("./fixtures/document-html");
     assert.equal(typeof window, "undefined");
-    assert.equal(docHtml.getHTML(), '<html><head></head><body>Hello World</body></html>');
+    assert.equal(
+      docHtml.getHTML(),
+      "<html><head></head><body>Hello World</body></html>"
+    );
   });
 
   it("should call beforeParse with the window and jsdom context", () => {

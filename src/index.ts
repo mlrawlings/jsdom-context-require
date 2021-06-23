@@ -1,12 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
-import { JSDOM } from "jsdom";
+import { DOMWindow, JSDOM } from "jsdom";
 import * as browserResolve from "lasso-resolve-from";
 import createContextRequire, {
   Types as TContextRequire
 } from "context-require";
 
 const remapCache = Object.create(null);
+const coverage =
+  (global as any).__coverage__ || ((global as any).__coverage__ = {});
 
 export namespace Types {
   export interface Options {
@@ -17,7 +19,7 @@ export namespace Types {
     /** An object containing any browser specific require hooks to be used in this module. */
     extensions?: TContextRequire.Hooks;
     /** A function called with the window, and the module, before parsing html. */
-    beforeParse?(window: Window, context: JSDOM): void;
+    beforeParse?(window: DOMWindow, context: JSDOM): void;
   }
 
   export interface JSDOMModule extends JSDOM {
@@ -35,7 +37,10 @@ export default createJSDOMContextRequire;
  */
 function createJSDOMContextRequire(options: Types.Options): Types.JSDOMModule {
   const { html, dir, extensions, beforeParse, ...jsdomOptions } = options;
-  const context = new JSDOM("", { runScripts: "dangerously", ...jsdomOptions }) as Types.JSDOMModule;
+  const context = new JSDOM("", {
+    runScripts: "dangerously",
+    ...jsdomOptions
+  }) as Types.JSDOMModule;
   const { window } = context;
   const resolveConfig = {
     remaps: loadRemaps,
@@ -50,7 +55,8 @@ function createJSDOMContextRequire(options: Types.Options): Types.JSDOMModule {
   context.require = createContextRequire({ dir, context, resolve, extensions });
 
   // Pass through istanbul coverage.
-  (window as any).__coverage__ = (global as any).__coverage__;
+
+  (window as any).__coverage__ = coverage;
 
   if (beforeParse) {
     beforeParse(window, context);
@@ -70,7 +76,8 @@ function createJSDOMContextRequire(options: Types.Options): Types.JSDOMModule {
    * @param request The requested path to resolve.
    */
   function resolve(from: string, request: string): string {
-    return browserResolve(from, request, resolveConfig).path;
+    const resolved = browserResolve(from, request, resolveConfig);
+    return resolved && resolved.path;
   }
 }
 
