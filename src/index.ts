@@ -56,10 +56,32 @@ function createJSDOMContextRequire(options: Types.Options): Types.JSDOMModule {
 
   // Pass through istanbul coverage.
   window.__coverage__ = coverage;
-  // Expose some globals commonly polyfilled by bundlers.
+  // Expose some globals commonly shimmed by bundlers.
   window.global = window;
   window.Buffer = Buffer;
   window.process = { ...process, browser: true };
+  window.setImmediate =
+    window.setImmediate ||
+    (() => {
+      const msg = `${Math.random()}`;
+      let queue: Array<(...args: unknown[]) => void> = [];
+
+      window.addEventListener("message", ev => {
+        if (ev.data === msg) {
+          const cbs = queue;
+          queue = [];
+          for (const cb of cbs) {
+            cb();
+          }
+        }
+      });
+
+      return function setImmediate(cb: (...args: unknown[]) => void) {
+        if (queue.push(cb) === 1) {
+          window.postMessage(msg, "*");
+        }
+      };
+    })();
 
   if (beforeParse) {
     beforeParse(window, context);
