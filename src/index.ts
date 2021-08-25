@@ -64,22 +64,38 @@ function createJSDOMContextRequire(options: Types.Options): Types.JSDOMModule {
     window.setImmediate ||
     (() => {
       const msg = `${Math.random()}`;
-      let queue: Array<(...args: unknown[]) => void> = [];
+      let queue: Array<(...args: unknown[]) => void | undefined> = [];
+      let offset = 0;
 
       window.addEventListener("message", ev => {
         if (ev.data === msg) {
           const cbs = queue;
+          offset += cbs.length;
           queue = [];
           for (const cb of cbs) {
-            cb();
+            if (cb) {
+              cb();
+            }
           }
         }
       });
 
-      return function setImmediate(cb: (...args: unknown[]) => void) {
-        if (queue.push(cb) === 1) {
+      window.clearImmediate = function clearImmediate(id: number) {
+        const index = id - offset;
+        if (index >= 0) {
+          queue[index] = undefined;
+        }
+      };
+
+      return function setImmediate(
+        cb: (...args: unknown[]) => void,
+        ...args: unknown[]
+      ) {
+        const index = queue.push(args.length ? () => cb(...args) : cb) - 1;
+        if (!index) {
           window.postMessage(msg, "*");
         }
+        return index + offset;
       };
     })();
 
