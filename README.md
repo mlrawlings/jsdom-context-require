@@ -41,8 +41,10 @@ Ultimately this allows you to run tests with JSDOM without exposing your nodejs 
 # Installation
 
 ```console
-npm install jsdom-context-require
+npm install jsdom jsdom-context-require -D
 ```
+
+Note: JSDOM is required as a peerDependency as of `jsdom-context-require@4`
 
 # Example
 
