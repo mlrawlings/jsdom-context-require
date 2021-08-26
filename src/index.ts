@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { DOMWindow, JSDOM } from "jsdom";
+import { DOMWindow, JSDOM, ConstructorOptions } from "jsdom";
 import * as browserResolve from "lasso-resolve-from";
 import createContextRequire, {
   Types as TContextRequire
@@ -11,7 +11,7 @@ const coverage =
   (global as any).__coverage__ || ((global as any).__coverage__ = {});
 
 export namespace Types {
-  export interface Options {
+  export interface Options extends Omit<ConstructorOptions, "beforeParse"> {
     /** The directory from which to resolve requires for this module. */
     dir: string;
     /** The initial html to parse with jsdom. */
