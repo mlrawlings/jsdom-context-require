@@ -19,7 +19,7 @@ export namespace Types {
     /** An object containing any browser specific require hooks to be used in this module. */
     extensions?: TContextRequire.Hooks;
     /** A function called with the window, and the module, before parsing html. */
-    beforeParse?(window: DOMWindow, context: JSDOM): void;
+    beforeParse?(window: DOMWindow, context: JSDOMModule): void;
   }
 
   export interface JSDOMModule extends JSDOM {
