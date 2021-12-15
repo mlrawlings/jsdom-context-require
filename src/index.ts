@@ -118,7 +118,15 @@ function createJSDOMContextRequire(options: Types.Options): Types.JSDOMModule {
    */
   function resolve(from: string, request: string): string {
     const resolved = browserResolve(from, request, resolveConfig);
-    return resolved && resolved.path;
+    if (!resolved) {
+      throw new Error(
+        `Could not resolve ${JSON.stringify(request)} from ${JSON.stringify(
+          from
+        )}`
+      );
+    }
+
+    return fs.realpathSync(resolved.path);
   }
 }
 
