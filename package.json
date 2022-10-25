@@ -64,6 +64,6 @@
     "lasso-resolve-from": "^1.2.0"
   },
   "peerDependencies": {
-    "jsdom": "11 - 19"
+    "jsdom": "11 - 20"
   }
 }
