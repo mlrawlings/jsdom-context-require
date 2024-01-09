@@ -9,14 +9,14 @@
   ],
   "bugs": "https://github.com/mlrawlings/jsdom-context-require/issues",
   "devDependencies": {
-    "@types/jsdom": "^16.2.11",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^15.12.4",
-    "coveralls": "^3.1.0",
+    "@types/jsdom": "^21.1.6",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.10.8",
+    "coveralls": "^3.1.1",
     "husky": "^0.14.3",
-    "jsdom": "^17.0.0",
+    "jsdom": "^23.2.0",
     "lint-staged": "^7.0.0",
-    "mocha": "^9.0.1",
+    "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "prettier": "^1.11.1",
     "ts-node": "^10.0.0",
@@ -60,10 +60,10 @@
   },
   "types": "dist/index.d.ts",
   "dependencies": {
-    "context-require": "^1.1.0",
+    "context-require": "^1.4.0",
     "lasso-resolve-from": "^1.2.0"
   },
   "peerDependencies": {
-    "jsdom": "11 - 22"
+    "jsdom": "11 - 23"
   }
 }
