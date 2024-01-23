@@ -1,0 +1,6 @@
+{
+  "browser": {
+    "./from": "./to.js",
+    "./missing": false
+  }
+}

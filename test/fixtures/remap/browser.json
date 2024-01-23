@@ -1,6 +1,0 @@
-{
-  "requireRemap": [{
-    "from": "./from.js",
-    "to": "./to.js"
-  }]
-}

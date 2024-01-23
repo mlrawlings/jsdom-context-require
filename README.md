@@ -50,7 +50,7 @@ Note: JSDOM is required as a peerDependency as of `jsdom-context-require@4`
 
 **./index.js**
 ```javascript
-import createBrowser from "jsdom-context-require";
+import { createBrowser } from "jsdom-context-require";
 
 const browser = createBrowser({
   dir: __dirname, // The path to resolve new requires from.

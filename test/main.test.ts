@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as assert from "assert";
-import createBrowser from "../src";
+import { createBrowser } from "../src";
 
 describe("jsdom-context-require", () => {
   it("should require in a jsdom context", () => {
@@ -12,7 +12,7 @@ describe("jsdom-context-require", () => {
     docHtml.setTitle("changed");
     assert.equal(
       docHtml.getHTML(),
-      "<html><head><title>changed</title></head><body></body></html>"
+      "<html><head><title>changed</title></head><body></body></html>",
     );
   });
 
@@ -23,7 +23,7 @@ describe("jsdom-context-require", () => {
     assert.equal(typeof window, "undefined");
     assert.equal(
       docHtml.getHTML(),
-      "<html><head></head><body>Hello World</body></html>"
+      "<html><head></head><body>Hello World</body></html>",
     );
   });
 
@@ -36,7 +36,7 @@ describe("jsdom-context-require", () => {
       beforeParse(window, context) {
         _window = window;
         _context = context;
-      }
+      },
     });
 
     assert.equal(browser, _context);
@@ -50,17 +50,31 @@ describe("jsdom-context-require", () => {
       extensions: {
         ".txt": (module, file) => {
           module.exports = fs.readFileSync(file, "utf-8");
-        }
-      }
+        },
+      },
     });
     const result = browser.require("./fixtures/file");
     assert.equal(result, "Some Text\n");
   });
 
-  it("should support browser json remaps", () => {
+  it("should support export remaps", () => {
     const dir = __dirname;
     const browser = createBrowser({ dir });
-    const result = browser.require("./fixtures/remap/from");
+    const result = browser.require("./fixtures/exports-remap/from");
     assert.equal(result, "to");
+  });
+
+  it("should support browser field remaps", () => {
+    const dir = __dirname;
+    const browser = createBrowser({ dir });
+    const result = browser.require("./fixtures/browser-remap/from");
+    assert.equal(result, "to");
+  });
+
+  it("should support browser field false remap", () => {
+    const dir = __dirname;
+    const browser = createBrowser({ dir });
+    const result = browser.require("./fixtures/browser-remap/missing");
+    assert.deepStrictEqual(result, {});
   });
 });
