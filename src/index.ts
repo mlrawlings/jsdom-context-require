@@ -54,11 +54,11 @@ export function createBrowser({
   const resolveExtensions = extensions
     ? [
         ...new Set([
-          ...Object.keys(require.extensions),
           ...Object.keys(extensions),
+          ...Object.keys(require.extensions).reverse(),
         ]),
       ]
-    : Object.keys(require.extensions);
+    : Object.keys(require.extensions).reverse();
   const window = browser.window;
 
   // Pass through istanbul coverage.
