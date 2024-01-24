@@ -18,6 +18,7 @@ export interface Browser extends JSDOM {
   require: ContextRequire.RequireFunction;
   window: DOMWindow & Global;
   yield(): Promise<void>;
+  act<T = unknown>(fn?: () => T): Promise<Awaited<T>>;
 }
 
 export interface Options
@@ -51,6 +52,7 @@ export function createBrowser({
     pretendToBeVisual: true,
     ...jsdomOptions,
   }) as Browser;
+  const { window } = browser;
   const resolveExtensions = extensions
     ? [
         ...new Set([
@@ -59,7 +61,6 @@ export function createBrowser({
         ]),
       ]
     : Object.keys(require.extensions).reverse();
-  const window = browser.window;
 
   // Pass through istanbul coverage.
   if ("__coverage__" in globalThis) {
@@ -124,6 +125,57 @@ export function createBrowser({
 
   browser.yield = () =>
     new Promise<void>((resolve) => window.setImmediate(resolve));
+  browser.act = async <T>(fn?: () => T): Promise<Awaited<T>> => {
+    let errors: undefined | Error | Set<Error>;
+    let errorStage = 0;
+    window.addEventListener("error", handleError);
+    window.addEventListener("unhandledrejection", handleError);
+
+    try {
+      const result = await fn?.();
+      await browser.yield();
+      return result;
+    } catch (err) {
+      trackError(err);
+    } finally {
+      window.removeEventListener("error", handleError);
+      window.removeEventListener("unhandledrejection", handleError);
+      switch (errorStage) {
+        case 0:
+          break;
+        case 1:
+          throw errors as Error;
+        default:
+          throw new window.AggregateError(errors as Set<Error>);
+      }
+    }
+
+    function handleError(ev: ErrorEvent | PromiseRejectionEvent) {
+      if (!ev.defaultPrevented) {
+        let error = "error" in ev ? ev.error : ev.reason || ev;
+        if ("detail" in error) error = error.detail;
+        ev.preventDefault();
+      }
+    }
+
+    function trackError(err: Error) {
+      switch (errorStage) {
+        case 0:
+          errors = err;
+          errorStage = 1;
+          break;
+        case 1:
+          if (err !== errors) {
+            errors = new Set([errors as Error, err]);
+            errorStage = 2;
+          }
+          break;
+        default:
+          (errors as Set<Error>).add(err);
+          break;
+      }
+    }
+  };
 
   if (beforeParse) {
     beforeParse(window, browser);

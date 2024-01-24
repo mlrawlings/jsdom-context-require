@@ -77,6 +77,24 @@ module.exports = (title) => {
 }
 ```
 
+# Additional browser apis
+
+The result of `createBrowser` api gives you a [jsdom instance](https://github.com/jsdom/jsdom?tab=readme-ov-file#jsdom-object-api).
+The following methods are added to the jsdom instance:
+
+## browser.require(id: string): Exports
+
+This is the same as the `require` function in node, except with all modules evaluated in the jsdom window's context.
+
+## browser.yield(): Promise<void>
+
+Waits for one macro task (`setImmediate`) to occur in the browser.
+
+## browser.act<T>(fn?: () => T): Promise<Awaited<T>>
+
+Runs and awaits a given (optional) function, then waits for a macro task (see [browser.yield](#browseryield-promise)).
+This helper also keeps track of any uncaught errors within the browser context and will reject the promise with the error, or an AggregateError if there are any.
+
 ### Contributions
 
 * Use `npm test` to build and run tests.
