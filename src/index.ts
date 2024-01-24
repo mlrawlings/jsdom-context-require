@@ -118,6 +118,7 @@ export function createBrowser({
         filename,
         pathFilter,
         packageFilter,
+        preserveSymlinks: false,
         extensions: resolveExtensions,
       } as resolveFile.SyncOpts);
     },

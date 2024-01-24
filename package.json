@@ -11,12 +11,11 @@
   "devDependencies": {
     "@types/jsdom": "^21.1.6",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.5",
+    "@types/node": "^20.11.6",
     "@types/resolve": "^1.20.6",
-    "coveralls": "^3.1.1",
-    "husky": "^0.14.3",
+    "husky": "^8.0.3",
     "jsdom": "^24.0.0",
-    "lint-staged": "^7.0.0",
+    "lint-staged": "^15.2.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "prettier": "^3.2.4",
@@ -39,8 +38,7 @@
   "license": "MIT",
   "lint-staged": {
     "*.ts": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "main": "dist/index.js",
@@ -50,16 +48,16 @@
   },
   "scripts": {
     "build": "tsc",
-    "coveralls": "cat coverage/lcov.info | coveralls",
     "format": "find {src,test} -name '*.ts' | xargs prettier --write",
     "mocha": "mocha -r ts-node/register ./test/**/*.test.ts",
     "precommit": "lint-staged && npm test && npm run build",
     "test": "nyc --extension=.ts --include=src/**/*.ts --reporter=lcov --reporter=text-summary npm run mocha",
-    "test-ci": "nyc --extension=.ts --include=src/**/*.ts --reporter=lcovonly --reporter=text npm run mocha"
+    "test-ci": "nyc --extension=.ts --include=src/**/*.ts --reporter=lcovonly --reporter=text npm run mocha",
+    "prepare": "husky install"
   },
   "types": "dist/index.d.ts",
   "dependencies": {
-    "context-require": "^1.4.0",
+    "context-require": "^1.4.2",
     "resolve": "^1.22.8",
     "resolve.exports": "^2.0.2"
   },

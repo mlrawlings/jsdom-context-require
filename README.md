@@ -19,10 +19,6 @@
   <a href="https://travis-ci.org/mlrawlings/jsdom-context-require">
   <img src="https://img.shields.io/travis/mlrawlings/jsdom-context-require.svg" alt="Build status"/>
   </a>
-  <!-- Coveralls coverage -->
-  <a href="https://coveralls.io/github/mlrawlings/jsdom-context-require">
-    <img src="https://img.shields.io/coveralls/mlrawlings/jsdom-context-require.svg" alt="Test Coverage"/>
-  </a>
   <!-- NPM version -->
   <a href="https://npmjs.org/package/jsdom-context-require">
     <img src="https://img.shields.io/npm/v/jsdom-context-require.svg" alt="NPM Version"/>
