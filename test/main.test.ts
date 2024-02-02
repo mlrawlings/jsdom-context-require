@@ -60,7 +60,7 @@ describe("jsdom-context-require", () => {
   it("should support export remaps", () => {
     const dir = __dirname;
     const browser = createBrowser({ dir });
-    const result = browser.require("./fixtures/exports-remap/from");
+    const result = browser.require("./fixtures/exports-remap");
     assert.equal(result, "to");
   });
 

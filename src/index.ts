@@ -1,18 +1,8 @@
-import { join } from "path";
-import * as resolveExports from "resolve.exports";
-import * as resolveFile from "resolve";
 import { type ConstructorOptions, type DOMWindow, JSDOM } from "jsdom";
 import createContextRequire, {
   type Types as ContextRequire,
 } from "context-require";
-
-const noopModule = join(__dirname, "../noop.js");
-const exportsMainFile = `__package_exports__`;
-const resolveExportsOptions: resolveExports.Options = {
-  unsafe: true,
-  browser: true,
-  conditions: ["default", "require", "browser"],
-};
+import { resolve } from "./resolve";
 
 export interface Browser extends JSDOM {
   require: ContextRequire.RequireFunction;
@@ -113,14 +103,10 @@ export function createBrowser({
     context: browser,
     extensions,
     resolve(basedir, req, { filename }) {
-      return resolveFile.sync(req, {
-        basedir,
-        filename,
-        pathFilter,
-        packageFilter,
-        preserveSymlinks: false,
-        extensions: resolveExtensions,
-      } as resolveFile.SyncOpts);
+      const resolved = resolve(req, basedir, resolveExtensions);
+      if (resolved) return resolved;
+
+      throw new Error(`Cannot find module '${req}' from '${filename}'`);
     },
   });
 
@@ -188,102 +174,4 @@ export function createBrowser({
   );
 
   return browser;
-
-  function pathFilter(
-    pkg: resolveFile.PackageJSON,
-    _file: string,
-    relativePath: string,
-  ): string {
-    if (pkg.exports) {
-      return resolveExports.exports(
-        pkg,
-        relativePath === exportsMainFile ? "." : relativePath,
-        resolveExportsOptions,
-      )?.[0] as string;
-    } else if (pkg.browser) {
-      const pkgBrowser = pkg.browser as Record<string, string | false> | string;
-      let requestedFile = relativePath === exportsMainFile ? "." : relativePath;
-
-      if (typeof pkgBrowser === "string") {
-        switch (requestedFile) {
-          case ".":
-          case "./":
-            return pkgBrowser;
-          default:
-            return requestedFile;
-        }
-      }
-
-      let replacement = pkgBrowser[requestedFile];
-      if (replacement !== undefined) {
-        return replacementOrNoop(replacement);
-      }
-
-      if (requestedFile === ".") {
-        // Check `.` and `./`
-        requestedFile = "./";
-        replacement = pkgBrowser[requestedFile];
-        if (replacement !== undefined) {
-          return replacementOrNoop(replacement);
-        }
-      } else if (requestedFile[0] !== ".") {
-        requestedFile = `./${requestedFile}`;
-        replacement = pkgBrowser[requestedFile];
-        if (replacement !== undefined) {
-          return replacementOrNoop(replacement);
-        }
-      }
-
-      const isFolder = requestedFile[requestedFile.length - 1] === "/";
-      if (isFolder) {
-        // If we're definitely matching a folder we'll try adding `index` to the
-        // end first.
-        requestedFile += "index";
-        replacement = pkgBrowser[requestedFile];
-        if (replacement !== undefined) {
-          return replacementOrNoop(replacement);
-        }
-      }
-
-      for (const ext of resolveExtensions) {
-        replacement = pkgBrowser[requestedFile + ext];
-        if (replacement !== undefined) {
-          return replacementOrNoop(replacement);
-        }
-      }
-
-      if (!isFolder) {
-        // If we're not matching a folder we'll try adding `/index` to the end.
-        requestedFile += "/index";
-        replacement = pkgBrowser[requestedFile];
-        if (replacement !== undefined) {
-          return replacementOrNoop(replacement);
-        }
-
-        for (const ext of resolveExtensions) {
-          replacement = pkgBrowser[requestedFile + ext];
-          if (replacement !== undefined) {
-            return replacementOrNoop(replacement);
-          }
-        }
-      }
-    }
-
-    return relativePath;
-  }
-}
-
-function packageFilter<
-  T extends { main?: unknown; exports?: unknown; browser?: unknown },
->(pkg: T) {
-  if (pkg.exports || pkg.browser) {
-    // defers to the "exports" field.
-    pkg.main = exportsMainFile;
-  }
-
-  return pkg;
-}
-
-function replacementOrNoop(id: string | false) {
-  return id === false ? noopModule : id;
 }

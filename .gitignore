@@ -7,6 +7,7 @@
 
 # NPM
 node_modules
+!test/**/node_modules
 npm-debug.log
 
 # Build
