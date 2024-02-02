@@ -69,7 +69,7 @@ function resolveWithPackage(
     );
     if (resolvedExports) {
       const resolved = path.join(moduleDir, resolvedExports[0]);
-      return tryStat(resolved).isFile() ? resolved : undefined;
+      return tryStat(resolved)?.isFile() ? resolved : undefined;
     }
 
     return;
