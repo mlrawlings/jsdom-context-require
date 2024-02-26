@@ -5,7 +5,9 @@ import * as resolveExports from "resolve.exports";
 const modulePartsReg = /^((?:@[^/]+\/)?[^/]+)(\/.*)?$/;
 const noopModule = path.join(__dirname, "../noop.js");
 const resolveExportsOptions: resolveExports.Options = {
+  unsafe: true,
   browser: true,
+  require: true,
   conditions: ["default", "require", "browser"],
 };
 
@@ -81,6 +83,8 @@ function resolveWithPackage(
     return resolveFile(path.join(moduleDir, resolvedLegacy), extensions);
   } else if (resolvedLegacy === false) {
     return noopModule;
+  } else {
+    return resolveFile(path.join(moduleDir, id), extensions);
   }
 }
 
@@ -154,10 +158,10 @@ function resolveLegacyPackage(
   switch (id) {
     case ".":
     case "./":
-      return pkg.main as string | undefined;
-    default:
-      return id;
+      return (pkg.main as string | undefined) || "./index";
   }
+
+  return id;
 }
 
 function resolveFile(file: string, extensions: string[]): string | undefined {
