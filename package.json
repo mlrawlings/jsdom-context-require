@@ -61,6 +61,6 @@
     "resolve.exports": "^2.0.2"
   },
   "peerDependencies": {
-    "jsdom": "11 - 24"
+    "jsdom": "11 - 25"
   }
 }
