@@ -141,6 +141,7 @@ export function createBrowser({
       if (!ev.defaultPrevented) {
         let error = "error" in ev ? ev.error : ev.reason || ev;
         if ("detail" in error) error = error.detail;
+        trackError(error);
         ev.preventDefault();
       }
     }
