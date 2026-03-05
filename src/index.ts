@@ -6,7 +6,7 @@ import { resolve } from "./resolve";
 
 export interface Browser extends JSDOM {
   require: ContextRequire.RequireFunction;
-  window: DOMWindow & Global;
+  window: DOMWindow & typeof globalThis;
   yield(): Promise<void>;
   act<T = unknown>(fn?: () => T): Promise<Awaited<T>>;
 }
